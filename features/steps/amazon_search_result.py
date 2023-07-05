@@ -1,6 +1,5 @@
 from selenium.webdriver.common.by import By
 from behave import given, when, then
-from time import sleep
 
 
 RESULT_TEXT = (By.XPATH, "//span[@class='a-color-state a-text-bold']")
@@ -16,4 +15,3 @@ def verify_search_results(context, expected_result):
 @when('Click on the first product')
 def click_first_product(context):
     context.driver.find_element(*PRODUCT_PRICE).click()
-    sleep(2)
