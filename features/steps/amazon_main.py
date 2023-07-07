@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from behave import given, when, then
+from time import sleep
 
 
 ORDERS_BTN = (By.ID, 'nav-orders')
@@ -24,7 +25,12 @@ def search_amazon(context, search_query):
 
 @when('Click Orders')
 def click_orders(context):
-    context.driver.find_element(*ORDERS_BTN).click()
+    element = context.driver.find_element(*ORDERS_BTN)
+    print('Before refresh:', element)
+    context.driver.refresh()
+    element = context.driver.find_element(*ORDERS_BTN)
+    print('After refresh:',element)
+    element.click()
 
 
 @when('click cart')
@@ -45,6 +51,11 @@ def click_sign_in_popup_btn(context):
     ).click()
 
 
+@when('Wait for {sec_amount} sec')
+def wait_sec(context, sec_amount):
+    sleep(int(sec_amount))
+
+
 @then('Verify there are {expected_amount} links')
 def verify_link_count(context, expected_amount):
     expected_amount = int(expected_amount)
@@ -55,3 +66,17 @@ def verify_link_count(context, expected_amount):
 
     # 36 == 36
     assert links_count == expected_amount, f'Expected {expected_amount} links, but got {links_count}'
+
+
+@then("Verify Sign In is clickable")
+def verify_sign_in_clickable(context):
+    sign_in_btn = context.driver.find_element(*POPUP_SIGNIN_BTN)
+    assert sign_in_btn.is_enabled(), 'Sign In button is not clickable'
+
+
+@then("Verify Sign In disappears")
+def verify_sign_in_disappears(context):
+    context.driver.wait.until(
+        EC.invisibility_of_element_located(POPUP_SIGNIN_BTN),
+        message='Sign In button did not disappear'
+    )
